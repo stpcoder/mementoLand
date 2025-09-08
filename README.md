@@ -13,6 +13,12 @@ Transform your travel memories into miniature worlds! Upload your travel photos 
 - 📱 **Swipeable Navigation**: Easily navigate between different trip worlds
 - 🤖 **AI-Powered Generation**: Using Google Gemini 2.5 Flash Image Preview API
 
+### 📽️ Demo Video
+- Watch the demo: https://youtu.be/jnq0qOCQfBE
+
+### 🙏 Special Thanks
+- Special Thanks to Nano-Banana — this was incredibly fun!
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -127,6 +133,12 @@ Open your browser and navigate to `http://localhost:5173`
 - Swipe left/right to navigate between different trip worlds
 - See previews of adjacent trips on the edges for smooth navigation
 - Each trip maintains its own collection of miniatures
+
+## ⚠️ Important Usage Warnings
+
+- **Before Adding to Land**: If the source image for a memento has an overly large background or includes visible floor/ground, it can disrupt the base land composition. Please be mindful of this before pressing "Add to Land."
+- **If You Decide Not to Add**: Simply refresh the page to discard the current generation state. If repeated "Regenerate" attempts do not place the memento as desired or produce odd results, a full page refresh is recommended.
+- **Always Use Regenerate When Needed**: If you proceed without pressing "Regenerate" after making adjustments, the existing memento might move, change size, or multiple mementos could be created unintentionally. To avoid these issues, please press "Regenerate" before finalizing.
 
 ## 🏗️ Architecture
 
