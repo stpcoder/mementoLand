@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import LandView from './components/LandView';
 import UploadModal from './components/UploadModal';
-import DebugLogs from './components/DebugLogs';
 import useStore from './store/useStore';
 import { landService } from './services/api';
 
@@ -68,7 +67,6 @@ function App() {
         <LandView />
       </main>
       <UploadModal />
-      <DebugLogs />
     </div>
   );
 }

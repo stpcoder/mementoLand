@@ -69,22 +69,45 @@ const LandView = () => {
       const audioUrl = `http://localhost:3000${currentLand.backgroundMusic}`;
       console.log('Full audio URL:', audioUrl);
       
-      const audio = new Audio(audioUrl);
+      const audio = new Audio();
       audio.loop = true;
       audio.volume = 0.5; // Set to 50% volume
       
       // Store reference
       audioRef.current = audio;
       
-      // Play audio
-      audio.play().then(() => {
-        console.log('✅ Audio playback started successfully');
-        setIsPlaying(true);
-      }).catch(error => {
-        console.error('❌ Audio playback failed:', error);
-        console.error('Error details:', error.message, error.name);
-        setIsPlaying(false);
-      });
+      // Try different audio formats
+      const tryAudioFormats = async () => {
+        const formats = ['.mp3', '.wav', '.ogg', '.m4a'];
+        const baseUrl = audioUrl.replace(/\.[^/.]+$/, ''); // Remove extension
+        
+        for (const format of formats) {
+          try {
+            audio.src = baseUrl + format;
+            console.log(`🎵 Trying audio format: ${baseUrl + format}`);
+            await audio.play();
+            console.log('✅ Audio playback started successfully with format:', format);
+            setIsPlaying(true);
+            return; // Success, exit
+          } catch (error) {
+            console.warn(`Failed to play ${format}:`, error.message);
+          }
+        }
+        
+        // If all formats fail, try the original URL
+        try {
+          audio.src = audioUrl;
+          await audio.play();
+          console.log('✅ Audio playback started with original URL');
+          setIsPlaying(true);
+        } catch (error) {
+          console.error('❌ Audio playback failed for all formats:', error);
+          console.error('Error details:', error.message, error.name);
+          setIsPlaying(false);
+        }
+      };
+      
+      tryAudioFormats();
     } else {
       console.log('⚠️ No background music for current land');
     }
@@ -132,6 +155,21 @@ const LandView = () => {
 
   // Get segments for current land
   const { segments = [], originalImages = {} } = currentLand ? getLandSegments(currentLand.id) : {};
+  
+  // Debug logging for segments and originalImages
+  useEffect(() => {
+    console.log('=== Debug Segments Data ===');
+    console.log('Current land ID:', currentLand?.id);
+    console.log('Segments count:', segments.length);
+    console.log('Segments:', segments);
+    console.log('Original images mapping:', originalImages);
+    if (segments.length > 0) {
+      console.log('Segment IDs:', segments.map(s => s.id));
+      console.log('Original image keys:', Object.keys(originalImages));
+    }
+    console.log('Displayed images:', displayedImages);
+    console.log('=========================');
+  }, [segments, originalImages, currentLand, displayedImages]);
 
   // Handle confirming the pending composite
   const handleConfirm = async () => {
@@ -221,11 +259,19 @@ const LandView = () => {
             audioRef.current.currentTime = 0;
           }
           
-          const audio = new Audio(`http://localhost:3000${data.backgroundMusic}`);
+          const audio = new Audio();
           audio.loop = true;
           audio.volume = 0.5;
-          audio.play().catch(err => console.error('Error playing music:', err));
           audioRef.current = audio; // Save the audio instance
+          
+          // Try to play the audio with error handling
+          const audioUrl = `http://localhost:3000${data.backgroundMusic}`;
+          audio.src = audioUrl;
+          audio.play().catch(err => {
+            console.error('Error playing music:', err);
+            // Try without autoplay
+            setIsPlaying(false);
+          });
         }
         
         // Open the export modal after finalization
@@ -662,10 +708,10 @@ const LandView = () => {
               {/* Bounding Box Overlay */}
               {segments.length > 0 && (
                 <svg 
-                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  className="absolute inset-0 w-full h-full"
                   viewBox="0 0 1024 1024"
                   preserveAspectRatio="xMidYMid meet"
-                  style={{ zIndex: 10 }}
+                  style={{ zIndex: 10, pointerEvents: 'none' }}
                 >
                   {segments.map((segment) => (
                     <g key={segment.id}>
@@ -674,53 +720,54 @@ const LandView = () => {
                         y={segment.bbox.y}
                         width={segment.bbox.width}
                         height={segment.bbox.height}
-                        fill={
-                          showBoundingBoxes && hoveredSegment === segment.id 
-                            ? "rgba(255, 0, 0, 0.2)" 
-                            : "transparent"
-                        }
-                        stroke={
-                          showBoundingBoxes 
-                            ? (hoveredSegment === segment.id ? "#ff0000" : "#ff6666")
-                            : "transparent"
-                        }
-                        strokeWidth={hoveredSegment === segment.id ? "3" : "2"}
-                        strokeDasharray={showBoundingBoxes ? "5,5" : "0"}
-                        opacity={showBoundingBoxes ? 1 : 0}
+                        fill="rgba(0,0,0,0.01)"
+                        stroke="transparent"
+                        strokeWidth="0"
+                        strokeDasharray="0"
+                        opacity="1"
                         style={{ 
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
                           pointerEvents: 'all'
                         }}
                         onMouseEnter={() => {
-                          console.log('Hovering segment:', segment.id);
+                          console.log('🔍 Hovering segment:', segment.id);
+                          console.log('📦 Segment data:', segment);
+                          console.log('🖼️ Original images available:', originalImages);
+                          console.log('🔑 Looking for image with key:', segment.id);
                           setHoveredSegment(segment.id);
                           
-                          // Show image popup on hover when boxes are hidden
-                          if (!showBoundingBoxes) {
-                            const segmentOriginalImage = originalImages[segment.id];
-                            if (segmentOriginalImage) {
-                              const imageData = {
-                                id: segment.id,
-                                path: segmentOriginalImage,
-                                label: segment.label,
-                                isHoverPopup: true // Mark as hover popup
-                              };
-                              // Add to displayed images if not already there
-                              if (!displayedImages.find(img => img.id === segment.id)) {
-                                setDisplayedImages(prev => [...prev, imageData]);
-                              }
+                          // Always try to show image popup on hover
+                          const segmentOriginalImage = originalImages[segment.id];
+                          console.log('✅ Found original image path:', segmentOriginalImage);
+                          
+                          if (segmentOriginalImage) {
+                            const imageData = {
+                              id: segment.id,
+                              path: segmentOriginalImage,
+                              label: segment.label || `Object ${segment.id}`,
+                              isHoverPopup: true // Mark as hover popup
+                            };
+                            console.log('📍 Adding image to display:', imageData);
+                            
+                            // Add to displayed images if not already there
+                            if (!displayedImages.find(img => img.id === segment.id && img.isHoverPopup)) {
+                              setDisplayedImages(prev => {
+                                const newImages = [...prev, imageData];
+                                console.log('📸 Updated displayed images:', newImages);
+                                return newImages;
+                              });
                             }
+                          } else {
+                            console.log('❌ No original image found for segment:', segment.id);
                           }
                         }}
                         onMouseLeave={() => {
                           console.log('Left segment:', segment.id);
                           setHoveredSegment(null);
                           
-                          // Remove hover popup when mouse leaves
-                          if (!showBoundingBoxes) {
-                            setDisplayedImages(prev => prev.filter(img => !img.isHoverPopup || img.id !== segment.id));
-                          }
+                          // Always remove hover popup when mouse leaves
+                          setDisplayedImages(prev => prev.filter(img => !(img.isHoverPopup && img.id === segment.id)));
                         }}
                         onClick={() => {
                           // Toggle selection
@@ -757,21 +804,6 @@ const LandView = () => {
                           }
                         }}
                       />
-                      {showBoundingBoxes && (
-                        <text
-                          x={segment.bbox.x}
-                          y={segment.bbox.y - 5}
-                          fill={hoveredSegment === segment.id ? "#ff0000" : "#ff6666"}
-                          fontSize={hoveredSegment === segment.id ? "16" : "14"}
-                          fontWeight="bold"
-                          style={{ 
-                            pointerEvents: 'none',
-                            transition: 'all 0.2s ease'
-                          }}
-                        >
-                          {segment.label}
-                        </text>
-                      )}
                     </g>
                   ))}
                 </svg>
@@ -851,16 +883,6 @@ const LandView = () => {
                 </div>
               )}
               
-              {/* Show Boxes button - always show when segments exist and no pending composite */}
-              {segments.length > 0 && !pendingComposite && (
-                <button
-                  onClick={() => setShowBoundingBoxes(!showBoundingBoxes)}
-                  className="absolute top-4 left-4 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-sm font-medium rounded-button shadow-soft hover:bg-white transition-colors"
-                  style={{ zIndex: 30 }}
-                >
-                  {showBoundingBoxes ? 'Hide' : 'Show'} Boxes ({segments.length})
-                </button>
-              )}
               
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-soft">
                 <p className="text-xs font-medium text-text-primary">

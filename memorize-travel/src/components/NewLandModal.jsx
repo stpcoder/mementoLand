@@ -7,7 +7,7 @@ const NewLandModal = ({ isOpen, onClose }) => {
   const [landName, setLandName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [backgroundType, setBackgroundType] = useState('sand');
+  const [backgroundType, setBackgroundType] = useState('grass');
   const [isCreating, setIsCreating] = useState(false);
   const { addLand } = useStore();
 
@@ -139,19 +139,6 @@ const NewLandModal = ({ isOpen, onClose }) => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setBackgroundType('sand')}
-                  className={`px-4 py-3 rounded-button font-medium transition-all ${
-                    backgroundType === 'sand' 
-                      ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  disabled={isCreating}
-                >
-                  🏖️ Sand
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={() => setBackgroundType('grass')}
                   className={`px-4 py-3 rounded-button font-medium transition-all ${
                     backgroundType === 'grass' 
@@ -162,19 +149,18 @@ const NewLandModal = ({ isOpen, onClose }) => {
                 >
                   🌿 Grass
                 </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setBackgroundType('snow')}
-                  className={`px-4 py-3 rounded-button font-medium transition-all ${
-                    backgroundType === 'snow' 
-                      ? 'bg-gradient-to-r from-blue-400 to-cyan-400 text-white shadow-lg' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  disabled={isCreating}
+                <div
+                  className="px-4 py-3 rounded-button font-medium bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                  title="Coming soon"
+                >
+                  🏖️ Sand
+                </div>
+                <div
+                  className="px-4 py-3 rounded-button font-medium bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                  title="Coming soon"
                 >
                   ❄️ Snow
-                </motion.button>
+                </div>
               </div>
             </div>
 
