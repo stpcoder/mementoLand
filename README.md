@@ -4,7 +4,7 @@ Transform your travel memories into miniature worlds! Upload your travel photos 
 
 ## 🎯 Project Overview
 
-**Memorize Travel** is an innovative web application that converts travel photos into miniature collectibles within isometric 3D worlds. Each trip becomes its own unique miniature landscape where your photo memories are transformed into 3D miniature items.
+**memento land** is an innovative web application that converts travel photos into miniature collectibles within isometric 3D worlds. Each trip becomes its own unique miniature landscape where your photo memories are transformed into 3D miniature items.
 
 ### Key Features
 - 📸 **Photo-to-Miniature Conversion**: Extract key subjects from travel photos and transform them into 3D miniature items
