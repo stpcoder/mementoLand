@@ -30,14 +30,26 @@ cd mementoLand
 
 2. **Python Dependencies Setup (for OpenCV)**
 ```bash
-# Install Python dependencies for image processing
+# Create and use a virtual environment INSIDE the backend folder
+cd memorize-travel-backend
+python3 -m venv venv
+source venv/bin/activate
+
+# Upgrade pip inside the venv (recommended)
+pip install --upgrade pip
+
+# Install Python dependencies for image processing using the venv's python
 pip install opencv-python numpy pillow
 
-# On macOS, you might need:
-brew install opencv
+# macOS note (if OpenCV bindings fail to load):
+# You may need system OpenCV libraries
+#   brew install opencv
 
-# On Ubuntu/Debian:
-# sudo apt-get install python3-opencv
+# Ubuntu/Debian note (optional system libs):
+#   sudo apt-get install python3-opencv
+
+# When you're done, you can deactivate the venv with:
+#   deactivate
 ```
 
 3. **Backend Setup**
@@ -65,15 +77,15 @@ Edit `.env` file:
 GEMINI_API_KEY=...
 MODEL_NAME=gemini-2.5-flash-image-preview
 
-# VEO API Configuration
-VEO_API_KEY=...
+# ELEVEN API Configuration
+ELEVEN_API_KEY=...
 
 # Server Configuration
 PORT=3000
 
 # File Storage
 IMAGE_STORAGE_PATH=./public/images
-MAX_FILE_SIZE=1048576000
+MAX_FILE_SIZE=104857600
 ```
 
 ### Running the Application
@@ -225,15 +237,15 @@ mementoLand/
 GEMINI_API_KEY=your_api_key_here
 MODEL_NAME=gemini-2.5-flash-image-preview
 
-# VEO API Configuration (Optional)
-VEO_API_KEY=your_veo_api_key_here
+# ELEVEN API Configuration
+ELEVEN_API_KEY=...
 
 # Server Configuration
 PORT=3000
 
 # File Storage
 IMAGE_STORAGE_PATH=./public/images
-MAX_FILE_SIZE=1048576000
+MAX_FILE_SIZE=104857600
 ```
 
 ### Frontend (.env)
