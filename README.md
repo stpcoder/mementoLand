@@ -1,4 +1,4 @@
-# Memorize Travel 🌍✈️
+# memento land
 
 Transform your travel memories into miniature worlds! Upload your travel photos and watch them transform into beautiful isometric 3D miniature items placed in your own virtual travel worlds.
 
