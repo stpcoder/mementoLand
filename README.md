@@ -83,7 +83,7 @@ Edit `.env` file:
 GEMINI_API_KEY=...
 MODEL_NAME=gemini-2.5-flash-image-preview
 
-# ELEVEN API Configuration
+# ELEVEN LABS API Configuration
 ELEVEN_API_KEY=...
 
 # Server Configuration
